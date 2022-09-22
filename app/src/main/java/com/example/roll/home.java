@@ -18,8 +18,11 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -87,8 +90,10 @@ public class home extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
 
+        //when te 'main' tab is loaded, show the proficiencies saved
         SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
         String text = sharedPref.getString("text", "");
+
         TextView textV = (TextView) getView().findViewById(R.id.charsSelected);
         textV.setText(text);
         Intent i = getActivity().getIntent();

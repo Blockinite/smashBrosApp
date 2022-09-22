@@ -4,11 +4,11 @@ import static java.lang.Math.abs;
 
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -28,6 +28,7 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.example.roll.databinding.ActivityMainBinding;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.gson.Gson;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -148,8 +149,11 @@ public class MainActivity extends AppCompatActivity {
         oppButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //pass the proficiencies to the Opponent tab
                 SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPref.edit();
+                Gson gson = new Gson();
+                String hashMapString = gson.toJson(prof);
                 editor.putString("text", saveTex);
                 editor.commit();
                 FragmentManager fragmentManager = getSupportFragmentManager();
@@ -167,20 +171,25 @@ public class MainActivity extends AppCompatActivity {
 
     public void addProf(View v){
         try {
+            //get the chosen character
             Spinner s = (Spinner) findViewById(R.id.spinner);
             TextInputEditText t = (TextInputEditText) findViewById(R.id.textIn);
-            String tex = t.getText().toString();
+            //get the input text (the proficiency)
+            String p = t.getText().toString();
             String character = s.getSelectedItem().toString();
-            TextView text = (TextView) findViewById(R.id.charsSelected);
-            prof.put(character, Integer.parseInt(tex));
-            proficiencies.put(character,tex);
-            text.setText("");
-            CharSequence currentText = text.getText();
+            TextView textBox = (TextView) findViewById(R.id.charsSelected);
+            textBox.setMovementMethod(new ScrollingMovementMethod());
+
+            //put the proficiency in a map with the related character
+            prof.put(character, Integer.parseInt(p));
+            proficiencies.put(character,p);
+            textBox.setText("");
+            CharSequence currentText = textBox.getText();
             for (Map.Entry<String, String> entry : proficiencies.entrySet()) {
-                currentText = text.getText();
-                text.setText(currentText + "\n" + entry.getKey() + " : " + entry.getValue());
+                currentText = textBox.getText();
+                textBox.setText(currentText + "\n" + entry.getKey() + " : " + entry.getValue());
             }
-            saveTex = currentText + "\n" + character + " : " + tex;
+            saveTex = textBox.getText().toString();
             System.out.println(prof);
         }catch (Exception e){
 
@@ -190,28 +199,28 @@ public class MainActivity extends AppCompatActivity {
     }
     @RequiresApi(api = Build.VERSION_CODES.N)
     public void runCheck(View v){
-        try {
+
             System.out.println("here1");
             Spinner s = (Spinner) findViewById(R.id.spinner2);
             String character = s.getSelectedItem().toString();
             TextView text = (TextView) findViewById(R.id.textView);
 
-
-            prof.forEach((key,p) -> {
-
-                if(p > 0){
-                            int temp =  Integer.parseInt(charsMap.get(key).get(character)) * (int) (0.5 * p) + (25*p);
+            text.setText("");
+            proficiencies.forEach((key,p) -> {
+                try {
+                            int temp =  Integer.parseInt(charsMap.get(key).get(character)) * (int) (0.5 * Integer.parseInt(p)) + (25*Integer.parseInt(p));
                             CharSequence currentText = text.getText();
                             System.out.println("here333333333");
+
                             text.setText(currentText + "\n" + key + " : " + String.valueOf(temp));
+
+                }catch (Exception e){
+
+
                 }
-
-            });
-
-        }catch (Exception e){
+                });
 
 
-        }
 
     }
 
